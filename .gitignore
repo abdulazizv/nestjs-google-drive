@@ -6,6 +6,9 @@
 #security variables
 .env
 
+# tools
+.vscode
+.idea
 # Logs
 logs
 *.log
