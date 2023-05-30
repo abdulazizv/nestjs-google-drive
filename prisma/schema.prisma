@@ -13,11 +13,13 @@ datasource db {
 model Users {
   id        String  @id @default(auto()) @map("_id") @db.ObjectId
   email     String  @unique
-  password  String?
-  token     String
+  password  String
+  token     String?
   drives    Drives[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("users")
 }
 
 model Drives {
@@ -28,6 +30,8 @@ model Drives {
   user      Users?  @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("drives")
 }
 
 
