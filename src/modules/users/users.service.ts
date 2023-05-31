@@ -19,7 +19,7 @@ export class UsersService {
       throw new HttpException('Email already exist', HttpStatus.CONFLICT);
     }
     const hashedPassword: Promise<string> =
-      this.authService.hashedPassword(password);
+      await this.authService.hashedPassword(password);
     const newUser = await this.prismaService.users.create({
       data: {
         email: email,
@@ -39,20 +39,51 @@ export class UsersService {
     };
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    const allUsers = await this.prismaService.users.findMany();
+    if (allUsers.length < 1) {
+      throw new HttpException(
+        'Users not found ! Database is empty',
+        HttpStatus.NO_CONTENT,
+      );
+    }
+    return allUsers;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    const oneUser = await this.prismaService.users.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    if (!oneUser) {
+      throw new HttpException('ID is incorrect! ', HttpStatus.NOT_FOUND);
+    }
+    return oneUser;
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    const check = await this.findOne(id);
+    if (!check.id) {
+      throw new HttpException(
+        'ID is incorrect! User not found',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    await this.prismaService.users.delete({
+      where: {
+        id: id,
+      },
+    });
+    return {
+      status: 'OK',
+      data: check.email,
+      message: 'Succesfully deleted',
+    };
   }
 
   async changeRefreshToken(id: string, refresh_token: string) {
