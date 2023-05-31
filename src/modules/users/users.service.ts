@@ -3,6 +3,7 @@ import { RegisterUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { AuthService } from '../../shared/utils/auth/auth.service';
+import { SignInUserDto } from 'modules/users/dto/signIn.user.dto';
 
 @Injectable()
 export class UsersService {
@@ -35,7 +36,7 @@ export class UsersService {
     await this.changeRefreshToken(newUser.id, tokens.refresh_token);
     return {
       status: 'OK',
-      data: tokens.access_token,
+      data: tokens,
     };
   }
 
@@ -62,8 +63,16 @@ export class UsersService {
     return oneUser;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const updatedUser = await this.prismaService.users.update({
+      where: {
+        id: id,
+      },
+      data: {
+        ...updateUserDto,
+      },
+    });
+    return updatedUser;
   }
 
   async remove(id: string) {
@@ -92,5 +101,49 @@ export class UsersService {
       data: { token: refresh_token },
     });
     return true;
+  }
+  async logOut(id: string) {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    await this.prismaService.users.update({
+      where: {
+        id,
+      },
+      data: {
+        token: '',
+      },
+    });
+    return {
+      status: 'OK',
+      message: 'User logged out successfully',
+    };
+  }
+
+  async signIn(signInDto: SignInUserDto) {
+    const { email, password } = signInDto;
+    const user = await this.prismaService.users.findUnique({
+      where: {
+        email,
+      },
+    });
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    const isMatch = await this.authService.comparePassword(
+      password,
+      user.password,
+    );
+    if (!isMatch) {
+      throw new HttpException('Password not matched', HttpStatus.FORBIDDEN);
+    }
+    const tokens = await this.authService.generateToken({ id: user.id, email });
+    await this.changeRefreshToken(user.id, tokens.refresh_token);
+    return {
+      status: 'OK',
+      message: 'Successfully signin',
+      data: tokens,
+    };
   }
 }
