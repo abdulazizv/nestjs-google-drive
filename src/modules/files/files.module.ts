@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { FilesController } from './files.controller';
+import { MinioModule } from 'nestjs-minio-client';
+import { MinioClientModule } from '../../shared/minio-client/minio-client.module';
 
 @Module({
-  imports:[],
+  imports:[MinioClientModule],
   controllers: [FilesController],
   providers: [FilesService]
 })

@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
-// import { BufferedFile } from '../../shared/minio-client/file.model';
-
+import { BufferedFile } from '../../shared/minio-client/file.model';
+import { MinioClientService } from '../../shared/minio-client/minio-client.service';
 @Injectable()
 export class FilesService {
-  // constructor(private readonly minioClientService: MinioClientService){}
-  async create(createFileDto: CreateFileDto,file:string) {
-      // const uploadVideo = await this.minioClientService.upload(file);
-      // console.log(uploadVideo);
+  constructor(private readonly minioClientService: MinioClientService){}
+  async create(createFileDto: CreateFileDto,file:BufferedFile) {
+      const uploadVideo = await this.minioClientService.upload(file);
+      console.log(uploadVideo);
       return "OK"
   }
 

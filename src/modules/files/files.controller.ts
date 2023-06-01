@@ -3,6 +3,7 @@ import { FilesService } from './files.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { BufferedFile } from '../../shared/minio-client/file.model';
 // import { BufferedFile } from '../../shared/minio-client/file.model';
 
 @Controller('files')
@@ -11,7 +12,7 @@ export class FilesController {
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  async create(@Body() createFileDto: CreateFileDto,@UploadedFile() file: string) {
+  async create(@Body() createFileDto: CreateFileDto,@UploadedFile() file: BufferedFile) {
     console.log(file);
     return this.filesService.create(createFileDto,file);
   }
