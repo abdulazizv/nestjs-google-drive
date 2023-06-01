@@ -23,13 +23,25 @@ model Users {
   @@map("users")
 }
 
+model Folders {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+    folder_name String
+    drives Drives[]
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+
+     @@map("folders")
+}
+
 model Drives {
   id           String         @id @default(auto()) @map("_id") @db.ObjectId
   mimetype     String?
   location_id  String?
-  userId       String?
+  userId       String?        @db.ObjectId
+  folderId     String?        @db.ObjectId
   sharedDrives SharedDrives[]
   user         Users?         @relation(fields: [userId], references: [id])
+  folder       Folders?       @relation(fields:[folderId], references:[id])
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 
@@ -38,13 +50,13 @@ model Drives {
 
 model SharedDrives {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  drive_id  String?
+  drive_id  String?   @db.ObjectId
   drive     Drives?  @relation(fields: [drive_id], references: [id])
   email     String
+  Users     Users?   @relation(fields: [userId], references: [id])
+  userId   String?  @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Users     Users?   @relation(fields: [usersId], references: [id])
-  usersId   String?  @db.ObjectId
 
   @@map("sharedDrives")
 }
