@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateFolderDto } from './dto/create-folder.dto';
 import { UpdateFolderDto } from './dto/update-folder.dto';
 import { PrismaService } from '../../shared/prisma/prisma.service';
+import { Request } from 'express';
 
 @Injectable()
 export class FoldersService {
@@ -14,16 +15,19 @@ export class FoldersService {
     return !!folder;
   }
 
-  async create(createFolderDto: CreateFolderDto) {
+  async create(createFolderDto: CreateFolderDto,req:any) {
     const newFolder = await this.prismaService.folders.create({
-      data: { ...createFolderDto },
+      data: { 
+        folder_name:createFolderDto.folder_name,
+        user_id: req.user.id
+      },
     });
     return newFolder;
   }
 
   async findAll() {
     const allFolders = await this.prismaService.folders.findMany({
-      include: { drives: true },
+      include: { drives: true,user:true },
     });
     if (allFolders.length < 1) {
       throw new NotFoundException('Folders not found');

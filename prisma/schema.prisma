@@ -47,6 +47,7 @@ model Roles {
 model Drives {
   id           String         @id @default(auto()) @map("_id") @db.ObjectId
   mimetype     String?
+  originalName String
   location_id  String?
   userId       String?        @db.ObjectId
   folderId     String?        @db.ObjectId

@@ -51,7 +51,6 @@ export class MinioClientService {
         function (err:any) {
           if (err) throw err;
 
-          console.log('Bucket policy set');
         },
     );
   }
@@ -86,6 +85,7 @@ export class MinioClientService {
     try {
       await this.client.putObject(bucketName, fileName, file.buffer, metaData);
       return {
+        file,
         url: `localhost:9000/olp-bucket/${fileName}`,
       };
     } catch (error) {
