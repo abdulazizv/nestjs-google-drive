@@ -48,6 +48,7 @@ model Drives {
   id           String         @id @default(auto()) @map("_id") @db.ObjectId
   mimetype     String?
   originalName String
+  is_openToAll Boolean @default(false)   
   location_id  String?
   userId       String?        @db.ObjectId
   folderId     String?        @db.ObjectId
@@ -64,7 +65,6 @@ model SharedDrives {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   drive_id  String?   @db.ObjectId
   role_id   String @db.ObjectId
-  is_openToAll Boolean @default(false)   
   drive     Drives?  @relation(fields: [drive_id], references: [id])
   role      Roles?    @relation(fields: [role_id],references: [id])
   email     String?
