@@ -1,4 +1,10 @@
-import { BadGatewayException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadGatewayException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { BufferedFile } from '../../shared/minio-client/file.model';
@@ -6,6 +12,7 @@ import { MinioClientService } from '../../shared/minio-client/minio-client.servi
 import { RequestUser } from '../../types';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { Response } from 'express';
+import { sharedDrivesDto } from './dto/create-sharedDrives.dto';
 
 @Injectable()
 export class FilesService {
@@ -75,87 +82,154 @@ export class FilesService {
       }
       return data;
     } catch (error) {
-      console.error(error)
+      console.error(error);
       throw new BadGatewayException({
-        message:'Unexpected Error'
-      })
+        message: 'Unexpected Error',
+      });
     }
   }
 
   async findOne(id: string) {
     try {
       const datas = await this.prismaService.drives.findUnique({
-        where:{
-          id
-        }
+        where: {
+          id,
+        },
       });
       if (!datas) {
         throw new NotFoundException({
-          message:"ID is not correct, File not found"
-        })
+          message: 'ID is not correct, File not found',
+        });
       }
-      return datas
+      return datas;
     } catch (error) {
-      console.error(error)
+      console.error(error);
       throw new BadGatewayException({
-        message:'Unexpected Error'
-      })
+        message: 'Unexpected Error',
+      });
     }
   }
 
   async update(id: string, updateFileDto: UpdateFileDto) {
     try {
       const updatedFile = await this.prismaService.drives.update({
-        where:{
-          id
-        },data:{...updateFileDto}
+        where: {
+          id,
+        },
+        data: { ...updateFileDto },
       });
       return {
-        status:"Ok",
-        data: updatedFile
-      }
+        status: 'Ok',
+        data: updatedFile,
+      };
     } catch (error) {
       throw new BadGatewayException({
-        message:"Unexpected error on update method"
-      })
+        message: 'Unexpected error on update method',
+      });
     }
   }
 
   async remove(id: string) {
     try {
       await this.prismaService.drives.delete({
-        where:{
-          id
-        }
-      })
+        where: {
+          id,
+        },
+      });
       return {
-        status:"OK",
-        message:"Successfully deleted"
-      }
+        status: 'OK',
+        message: 'Successfully deleted',
+      };
     } catch (error) {
       throw new BadGatewayException({
-        message:"Unexpected error"
-      })
+        message: 'Unexpected error',
+      });
     }
   }
 
   async shareFileToAll(id: string) {
     try {
       const updatedFile = await this.prismaService.drives.update({
-        where:{
-          id
-        },data: {
-          is_openToAll: true
-        }
+        where: {
+          id,
+        },
+        data: {
+          is_openToAll: true,
+        },
       });
       return {
-        status: "OK",
-        message:`${updatedFile.location_id} file is open everyone now !`
-      }
+        status: 'OK',
+        message: `${updatedFile.location_id} file is open everyone now !`,
+      };
     } catch (error) {
-      throw new BadGatewayException()
+      throw new BadGatewayException();
     }
   }
 
-  
+  async shareFileWithEmail(sharedDrivesDto: sharedDrivesDto) {
+    try {
+      const { email, filename, role_id } = sharedDrivesDto;
+      const data = await this.getByLocationId(filename);
+      if (!data) {
+        throw new NotFoundException({
+          message: 'Filename is incorrect',
+        });
+      }
+      const sharedDrive = await this.prismaService.sharedDrives.create({
+        data: {
+          drive_id: data.id,
+          email,
+          role_id,
+        },
+      });
+
+      return {
+        status: 'OK, This information shared',
+        resp: sharedDrive,
+      };
+    } catch (error) {
+      console.error(error);
+      throw new BadGatewayException();
+    }
+  }
+
+  async getFilesByFolder(folder: string) {
+    try {
+      const filesByFolder = await this.prismaService.drives.findMany({
+        where: {
+          folderId: folder,
+        },
+      });
+      if (!filesByFolder) {
+        throw new NotFoundException({
+          message: 'File not found in this folder',
+        });
+      }
+      return filesByFolder;
+    } catch (error) {
+      console.error(error);
+      throw new BadGatewayException();
+    }
+  }
+
+  async getFilesByMimeType(mimetype: string) {
+    try {
+      const mimetypeFiles = await this.prismaService.drives.findMany({
+        where: {
+          mimetype,
+        },
+      });
+      if (!mimetypeFiles) {
+        throw new NotFoundException({
+          message: 'Files not found according to this mimetype',
+        });
+      }
+      return mimetypeFiles;
+    } catch (error) {
+      console.error(error);
+      throw new BadGatewayException({
+        message: 'Server error on getting datas with mimetype',
+      });
+    }
+  }
 }

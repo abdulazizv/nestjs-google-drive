@@ -45,7 +45,8 @@ import { FilesService } from '../../modules/files/files.service';
       } else if(drive.is_openToAll){
             return true;
       }  
-      else if(drive.userId != verifiedToken.id && !drive.sharedDrives.includes(verifiedToken.email)) {
+      else if(drive.userId != verifiedToken.id && drive.sharedDrives[0].email !== verifiedToken.email ) {
+        console.log(drive.sharedDrives.includes(verifiedToken.email),"email",verifiedToken.email,"sharedDrives =>" ,drive.sharedDrives)
         throw new UnauthorizedException({
             message: "У вас нет разрешения на просмотр этого файла",
           });

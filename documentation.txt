@@ -1,0 +1,11 @@
+###                         Working with files
+filename is part of 'http://localhost:3000/${MINIO_BUCKET_NAME}/${filename}' this url, filename came after minio-bucket name and "/".
+filename is this `ed1baaeeac87ca9fecfceb033f026d9b.mp4` *** условно ***
+
+${BASE_URL}/files/location/${filename} -> Чтобы получить этот файл, вам нужно написать имя файла после слова location/.
+${BASE_URL}/files/download-file/${filename} -> Если вы хотите загрузить этот файл, вам нужно дать этой endpoint имя файла после download-file/
+
+*** обеим этим «endpoint» необходимо предоставить токен авторизации Header ***
+*** если файл не принадлежит пользователю в токене, и если среди разрешенных email в токене нет email, или если файл открыт не для всех, будет возвращен ответ "You don't have access" ***  
+
+
