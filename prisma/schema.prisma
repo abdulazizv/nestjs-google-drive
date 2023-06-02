@@ -63,12 +63,13 @@ model Drives {
 model SharedDrives {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   drive_id  String?   @db.ObjectId
-  role_id  String @db.ObjectId
+  role_id   String @db.ObjectId
+  is_openToAll Boolean @default(false)   
   drive     Drives?  @relation(fields: [drive_id], references: [id])
-  role     Roles?    @relation(fields: [role_id],references: [id])
-  email     String
+  role      Roles?    @relation(fields: [role_id],references: [id])
+  email     String?
   Users     Users?   @relation(fields: [userId], references: [id])
-  userId   String?  @db.ObjectId
+  userId    String?  @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

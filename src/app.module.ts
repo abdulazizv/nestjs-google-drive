@@ -5,6 +5,7 @@ import { UsersModule } from 'modules/users/users.module';
 import { FilesModule } from './modules/files/files.module';
 import { FoldersModule } from './modules/folders/folders.module';
 import { RolesModule } from './modules/roles/roles.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [UsersModule,FilesModule,FoldersModule,RolesModule],

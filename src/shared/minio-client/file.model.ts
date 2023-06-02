@@ -25,4 +25,4 @@ export interface StoredFileMetadata{
 }
 
 
-export type AppMimeType = 'video/mp4' | 'image/jpeg' | 'application/pdf' | 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' | 'audio/mpeg' | 'audio.wav' | 'audio/mp3';
+export type AppMimeType = 'video/mp4' | 'image/jpeg' | 'application/pdf' | 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' | 'audio/mpeg' | 'audio.wav' | 'audio/mp3' | 'video/wmv';

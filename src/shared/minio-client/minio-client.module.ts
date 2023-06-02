@@ -17,11 +17,11 @@ import {ConfigModule, ConfigService} from "@nestjs/config";
     //   inject: [ConfigService]
     // })
     MinioModule.register({
-        endPoint: 'localhost',
+        endPoint: process.env.MINIO_ENDPOINT,
         port: 9000,
         useSSL: false,  //If on localhost, keep it at false. If deployed on https, change to true
-        accessKey: 'ojiZYKW8sbb6mCmSBvE4',
-        secretKey: 'ULcl0fuzCRN7PU91VIbnrjtX4h69uI0Mm7qnywhX'
+        accessKey: process.env.MINIO_ACCESS_KEY,
+        secretKey: process.env.MINIO_SECRET_KEY
     })
 
   ],

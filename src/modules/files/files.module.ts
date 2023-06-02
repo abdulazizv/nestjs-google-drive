@@ -9,6 +9,7 @@ import { PrismaModule } from '../../shared/prisma/prisma.module';
 @Module({
   imports:[MinioClientModule,JwtModule.register({}),PrismaModule],
   controllers: [FilesController],
-  providers: [FilesService]
+  providers: [FilesService],
+  exports:[FilesService]
 })
 export class FilesModule {}

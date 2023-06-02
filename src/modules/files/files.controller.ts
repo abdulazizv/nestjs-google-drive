@@ -10,6 +10,7 @@ import {
   UploadedFile,
   UseGuards,
   Req,
+  Res,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { CreateFileDto } from './dto/create-file.dto';
@@ -18,6 +19,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { BufferedFile } from '../../shared/minio-client/file.model';
 import { RequestUser } from '../../types';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { Response } from 'express';
+import { checkGuard } from '../../common/guards/check.guard';
 
 @Controller('files')
 export class FilesController {
@@ -31,10 +34,13 @@ export class FilesController {
     @UploadedFile() file: BufferedFile,
     @Req() req: any,
   ) {
-    console.log(file);
     return this.filesService.create(createFileDto, file,req);
   }
 
+  @Get('/download-file/:fileid')
+  async downloadFile(@Param('fileid') id:string,@Res() res:Response){
+      return this.filesService.getFile(id,res);
+  }
   @Get()
   findAll() {
     return this.filesService.findAll();
@@ -43,6 +49,13 @@ export class FilesController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.filesService.findOne(+id);
+  }
+
+  @UseGuards(checkGuard)
+  @Get('location/:id')
+  findById(@Param('id') id: string) {
+    return "Hello"
+    // return this.filesService.getByLocationId(id);
   }
 
   @Patch(':id')

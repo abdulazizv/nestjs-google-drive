@@ -7,7 +7,7 @@ async function bootstrap() {
   try {
     const PORT = process.env.PORT || 3030;
     const app = await NestFactory.create(AppModule);
-    app.setGlobalPrefix('api/v1');
+    
     app.enableCors();
 
     const swaggerDocument = SwaggerModule.createDocument(app,swaggerConfig);

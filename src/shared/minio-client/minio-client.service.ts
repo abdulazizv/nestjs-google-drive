@@ -4,12 +4,13 @@ import * as process from "process";
 import {BufferedFile} from "./file.model";
 import * as crypto from "crypto"
 import * as Minio from 'minio'
+import { Readable } from 'stream';
 
 @Injectable()
 export class MinioClientService {
 
   private minioClient: Minio.Client
-  private static readonly BUCKET_NAME = 'olp-bucket'
+  private static readonly BUCKET_NAME = process.env.MINIO_BUCKET_NAME || 'olp-bucket'
   constructor(private readonly minio: MinioService) {
     this.logger = new Logger('MinioService')
 
@@ -46,7 +47,7 @@ export class MinioClientService {
       ],
     };
     this.client.setBucketPolicy(
-        'olp-bucket',
+        process.env.MINIO_BUCKET_NAME,
         JSON.stringify(policy),
         function (err:any) {
           if (err) throw err;
@@ -70,9 +71,7 @@ export class MinioClientService {
 
 
   public async upload(file: BufferedFile, bucketName: string = this.bucketName) {
-    // if (!file.mimetype.includes('mp4')) {
-    //   throw new HttpException('File type not supported', HttpStatus.BAD_REQUEST);
-    // }
+
   
     const timestamp = Date.now().toString();
     const hashedFileName = crypto.createHash('md5').update(timestamp).digest('hex');
@@ -85,13 +84,24 @@ export class MinioClientService {
     try {
       await this.client.putObject(bucketName, fileName, file.buffer, metaData);
       return {
-        file,
-        url: `localhost:9000/olp-bucket/${fileName}`,
+        url: `${process.env.MINIO_ENDPOINT}:${process.env.MINIO_PORT}/olp-bucket/${fileName}`,
       };
     } catch (error) {
       console.log(error);
       throw new HttpException('Error uploading file', HttpStatus.BAD_REQUEST);
     }
+  }
+
+  public async getFileStream(filename: string): Promise<Readable> {
+    return new Promise<Readable>((resolve, reject) => {
+      this.client.getObject(this.bucketName, filename, (err: any, dataStream: Readable) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(dataStream);
+        }
+      });
+    });
   }
 
 }
