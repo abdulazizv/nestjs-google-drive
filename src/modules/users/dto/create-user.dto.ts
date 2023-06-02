@@ -5,6 +5,5 @@ export class RegisterUserDto {
   @IsEmail()
   readonly email: string;
   @IsString()
-  @IsStrongPassword()
   readonly password: string;
 }

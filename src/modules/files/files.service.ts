@@ -62,7 +62,6 @@ export class FilesService {
 
   async getByLocationId(filename:string) {
     filename = `${process.env.MINIO_ENDPOINT}:${process.env.MINIO_PORT}/${process.env.MINIO_BUCKET_NAME}/${filename}`;
-    console.log(filename)
     const data = await this.prismaService.drives.findFirst({
       where:{
         location_id: filename

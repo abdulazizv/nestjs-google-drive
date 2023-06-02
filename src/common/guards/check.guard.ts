@@ -37,7 +37,20 @@ import { FilesService } from '../../modules/files/files.service';
         });
       }
       const drive = await this.filesService.getByLocationId(req.params.id);
-      console.log(drive);
+      if(!drive) {
+        throw new UnauthorizedException({
+            message: "Такой файл не найден",
+          });
+
+      } else if(drive.is_openToAll){
+            return true;
+      }  
+      else if(drive.userId != verifiedToken.id && !drive.sharedDrives.includes(verifiedToken.email)) {
+        throw new UnauthorizedException({
+            message: "У вас нет разрешения на просмотр этого файла",
+          });
+      }
+      
       return true;
     }
   }
