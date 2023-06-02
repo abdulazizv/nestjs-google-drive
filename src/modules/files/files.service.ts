@@ -138,4 +138,24 @@ export class FilesService {
       })
     }
   }
+
+  async shareFileToAll(id: string) {
+    try {
+      const updatedFile = await this.prismaService.drives.update({
+        where:{
+          id
+        },data: {
+          is_openToAll: true
+        }
+      });
+      return {
+        status: "OK",
+        message:`${updatedFile.location_id} file is open everyone now !`
+      }
+    } catch (error) {
+      throw new BadGatewayException()
+    }
+  }
+
+  
 }

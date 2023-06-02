@@ -16,7 +16,6 @@ model Users {
   password     String
   token        String?
   drives       Drives[]
-  sharedDrives SharedDrives[]
   folders      Folders[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
@@ -68,8 +67,6 @@ model SharedDrives {
   drive     Drives?  @relation(fields: [drive_id], references: [id])
   role      Roles?    @relation(fields: [role_id],references: [id])
   email     String?
-  Users     Users?   @relation(fields: [userId], references: [id])
-  userId    String?  @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
