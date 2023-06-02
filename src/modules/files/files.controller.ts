@@ -48,23 +48,22 @@ export class FilesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.filesService.findOne(+id);
+    return this.filesService.findOne(id);
   }
 
   @UseGuards(checkGuard)
   @Get('location/:id')
   findById(@Param('id') id: string) {
-    return "Hello"
-    // return this.filesService.getByLocationId(id);
+    return this.filesService.getByLocationId(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateFileDto: UpdateFileDto) {
-    return this.filesService.update(+id, updateFileDto);
+    return this.filesService.update(id, updateFileDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.filesService.remove(+id);
+    return this.filesService.remove(id);
   }
 }
