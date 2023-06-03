@@ -1,4 +1,7 @@
 ###                         Working with files
+
+                    *** лучше попробовать все методы в postman or insomnia, потому что у swagger есть проблемы с отправкой файла и возвратом файла*** 
+
 filename is part of 'http://localhost:3000/${MINIO_BUCKET_NAME}/${filename}' this url, filename came after minio-bucket name and "/".
 filename is this `ed1baaeeac87ca9fecfceb033f026d9b.mp4` *** условно ***
 
@@ -9,3 +12,25 @@ ${BASE_URL}/files/download-file/${filename} -> Если вы хотите заг
 *** если файл не принадлежит пользователю в токене, и если среди разрешенных email в токене нет email, или если файл открыт не для всех, будет возвращен ответ "You don't have access" ***  
 
 
+${BASE_URL}/files/ -> после этой «endpoint» вы можете дать body file и любой тип файла. Вам также необходимо указать folderId. предоставление originalName необязательно
+${BASE_URL}/files/all/:id -> после этой «endpoint» вам нужно указать userId нa body. Этот метод возвращает все файлы, принадлежащие User.
+${BASE_URL}/files/folder/:id -> Если вы передадите идентификатор папки после слова «folder» в «request», он вернет все файлы, принадлежащие этой folderId.
+${BASE_URL}/files/search?mimetype="%{mimetype}" -> здесь необходимо написать mimetype
+
+########                                *** users ***                 ##########################
+${BASE_URL}/users/register -> пользователь идет endpoint, чтобы зарегистрироваться и получить токен. Серверная часть выдает два токена. время access_token короткое, refresh_token длинное.
+${BASE_URL}/users/logout -> Существует «endpoint» для *logout* пользователя из системы.
+${BASE_URL}/users/signin -> для signin
+
+
+########                        *** Roles ***                                               ######
+
+Есть два разных метода для ролей. Если role_id равен 1, он может читать и писать. Если это 2, только чтение
+id role_id не может быть меньше 1 и не больше 2.
+
+########                        *** Folders ***     ####
+                                          
+папка всегда создается первой, и новый файл может быть помещен в эту папку, используя ее id.
+
+
+############################        Это основные способы, а есть и другие.    ################
