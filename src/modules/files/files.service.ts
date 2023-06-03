@@ -65,6 +65,25 @@ export class FilesService {
     return allFiles;
   }
 
+  async findAllByUserId(userId: string) {
+    try {
+      const allFiles = await this.prismaService.drives.findMany({
+        where:{
+          userId
+        }
+      });
+      if(allFiles.length < 1) {
+        throw new NotFoundException({
+          message:'Files not found with this userId'
+        })
+      };
+      return allFiles;
+    } catch (error) {
+      console.error(error);
+      throw new BadGatewayException()
+    }
+  }
+
   async getByLocationId(filename: string) {
     try {
       filename = `${process.env.MINIO_ENDPOINT}:${process.env.MINIO_PORT}/${process.env.MINIO_BUCKET_NAME}/${filename}`;
@@ -105,7 +124,7 @@ export class FilesService {
     } catch (error) {
       console.error(error);
       throw new BadGatewayException({
-        message: 'Unexpected Error',
+        message:`${error.message}`,
       });
     }
   }
@@ -212,23 +231,24 @@ export class FilesService {
     }
   }
 
-  async getFilesByMimeType(mimetype: string) {
+  async getFilesByMimeType(mimetype: string,req:RequestUser) {
     try {
       const mimetypeFiles = await this.prismaService.drives.findMany({
         where: {
           mimetype,
+          userId:req.user.id
         },
       });
-      if (!mimetypeFiles) {
+      if (mimetypeFiles.length < 1) {
         throw new NotFoundException({
-          message: 'Files not found according to this mimetype',
+          message: 'Files not found according to this mimetype and user.id',
         });
       }
       return mimetypeFiles;
     } catch (error) {
       console.error(error);
       throw new BadGatewayException({
-        message: 'Server error on getting datas with mimetype',
+        message: `${error.message}`,
       });
     }
   }

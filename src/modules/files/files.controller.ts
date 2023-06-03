@@ -11,6 +11,7 @@ import {
   UseGuards,
   Req,
   Res,
+  Query,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { CreateFileDto } from './dto/create-file.dto';
@@ -48,25 +49,33 @@ export class FilesController {
     return this.filesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.filesService.findOne(id);
+  @Get('all/:id')
+  async getAllByUser(@Param('id') id: string) {
+    return this.filesService.findAllByUserId(id);
   }
+
+ 
 
   @Get('folder/:id')
   getFilesByFolder(@Param('id') id: string) {
     return this.filesService.getFilesByFolder(id);
   }
 
-  @Get('mimetype/:id')
-  getFilesByMimeType(@Param('id') id: string) {
-    return this.filesService.getFilesByMimeType(id);
+  @UseGuards(JwtAuthGuard) // this guard helps us to handle user.id and we can search with user.id and mimetype
+  @Get('search')
+  getFilesByMimeType(@Query('mimetype') mimetype: string,@Req() req:RequestUser) {
+    return this.filesService.getFilesByMimeType(mimetype,req);
   }
 
   @UseGuards(checkGuard)
   @Get('location/:id')
   findById(@Param('id') id: string) {
     return this.filesService.getByLocationId(id);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.filesService.findOne(id);
   }
 
   @Post('share')
