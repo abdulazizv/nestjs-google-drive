@@ -42,11 +42,18 @@ import { FilesService } from '../../modules/files/files.service';
             message: "Такой файл не найден",
           });
 
-      } else if(drive.is_openToAll){
+      } 
+      let isAccess = false
+      for(let x of drive.sharedDrives) {
+        if(x.email != verifiedToken.email) {
+            isAccess = true
+        }
+      }
+      if(drive.is_openToAll){
             return true;
       }  
-      else if(drive.userId != verifiedToken.id && drive.sharedDrives[0].email !== verifiedToken.email ) {
-        console.log(drive.sharedDrives.includes(verifiedToken.email),"email",verifiedToken.email,"sharedDrives =>" ,drive.sharedDrives)
+      else if(drive.userId != verifiedToken.id && isAccess) {
+        
         throw new UnauthorizedException({
             message: "У вас нет разрешения на просмотр этого файла",
           });
